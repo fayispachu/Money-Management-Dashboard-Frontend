@@ -48,7 +48,7 @@ function TotalBalance() {
         </h2>
 
         <h1 className="text-3xl font-bold text-emerald-400 mt-2">
-          ₹{totalBalance.toLocaleString()}
+          ${totalBalance.toLocaleString()}
         </h1>
 
         <p className="text-neutral-600 text-xs">
