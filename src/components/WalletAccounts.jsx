@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { MoreVertical } from "lucide-react";
 
 function WalletAccounts() {
-  const wallets = [
-    { name: "Wallet A", amount: "10,000", growth: "+10% since last hour" },
-    { name: "Wallet B", amount: "5,000", growth: "+5% since last hour" },
-    { name: "Wallet C", amount: "5,000", growth: "+7% since last hour", active: true },
-    { name: "Wallet D", amount: "5,000", growth: "+3% since last hour" },
+  // Predefined demo wallets that look like real data
+  const walletsData = [
+    { id: 1, name: "Main Wallet", amount: "12,500", growth: "+4% since last hour" },
+    { id: 2, name: "Savings Wallet", amount: "8,200", growth: "+2% since last hour" },
+    { id: 3, name: "Trading Wallet", amount: "5,750", growth: "+7% since last hour" },
+    { id: 4, name: "Emergency Fund", amount: "3,000", growth: "+1% since last hour" },
   ];
+
+  const [activeWallet, setActiveWallet] = useState(null);
 
   return (
     <div className="pb-3">
@@ -19,32 +22,23 @@ function WalletAccounts() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-        {wallets.map((wallet, index) => (
+        {walletsData.map((wallet, index) => (
           <div
-            key={index}
-            className={`relative bg-neutral-800 rounded-lg px-2 py-2 border
-              ${
-                wallet.active
-                  ? "border-emerald-500 shadow-[0_0_0_1px_#10b981]"
-                  : "border-neutral-700"
+            key={wallet.id}
+            className={`relative bg-neutral-800 rounded-lg px-2 py-2 border cursor-pointer
+              ${activeWallet === index
+                ? "border-emerald-500 shadow-[0_0_0_1px_#10b981]"
+                : "border-neutral-700"
               }`}
+            onClick={() => setActiveWallet(index)}
           >
             <MoreVertical
               size={14}
               className="absolute top-2 right-2 text-neutral-500 cursor-pointer"
             />
-
-            <p className="text-neutral-400 text-xs">
-              {wallet.name}
-            </p>
-
-            <h1 className="text-white text-base font-semibold mt-1">
-              {wallet.amount}
-            </h1>
-
-            <p className="text-neutral-500 text-xs mt-1">
-              {wallet.growth}
-            </p>
+            <p className="text-neutral-400 text-xs">{wallet.name}</p>
+            <h1 className="text-white text-base font-semibold mt-1">{wallet.amount}</h1>
+            <p className="text-neutral-500 text-xs mt-1">{wallet.growth}</p>
           </div>
         ))}
       </div>

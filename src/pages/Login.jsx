@@ -26,7 +26,9 @@ function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-950">
       <div className="bg-neutral-900 p-8 rounded-xl shadow-lg w-full max-w-md text-white">
-                        <h1 className="text-2xl font-bold mb-6 text-center text-emerald-500">Wellcome to Trust Wallet </h1>
+        <h1 className="text-2xl font-bold mb-6 text-center text-emerald-500">
+          Welcome to Trust Wallet
+        </h1>
 
         <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
 
@@ -66,7 +68,6 @@ function Login() {
           </button>
         </form>
 
-        {/* Add Register link */}
         <p className="text-center mt-4 text-sm text-neutral-400">
           Don't have an account?{" "}
           <Link to="/register" className="text-emerald-500 hover:underline">
