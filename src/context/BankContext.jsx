@@ -11,25 +11,27 @@ export const BankProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const fetchBanks = async () => {
-    if (!user?._id) return; // ✅ FIXED
+const fetchBanks = async () => {
+  if (!user?.id) return;
 
-    try {
-      setLoading(true);
-      const { data } = await axiosInstance.get(
-        `/banks/user/${user._id}` // ✅ FIXED
-      );
-      setBanks(data);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch banks");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const { data } = await axiosInstance.get(
+      `/banks/user/${user.id}`
+    );
+    setBanks(data);
+  } catch (err) {
+    setError(err.response?.data?.message || "Failed to fetch banks");
+  } finally {
+    setLoading(false);
+  }
+};
+
 const addBank = async (bank) => {
   console.log("addBank triggered", bank);
+  console.log("Current user:", user);
 
-  if (!user?._id) {
+  if (!user?.id) {
     console.log("User missing");
     return;
   }
@@ -37,7 +39,7 @@ const addBank = async (bank) => {
   try {
     console.log("Sending request...");
     await axiosInstance.post("/banks/add", {
-      userId: user._id,
+      userId: user.id,   // ✅ FIXED
       name: bank.name,
       accountNumber: bank.accountNumber,
       ifsc: bank.ifsc,
@@ -49,6 +51,7 @@ const addBank = async (bank) => {
     console.error("AddBank Error:", err.response?.data || err.message);
   }
 };
+
 useEffect(() => {
   console.log("User changed:", user);
   fetchBanks();
