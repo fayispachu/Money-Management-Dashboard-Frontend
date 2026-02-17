@@ -76,7 +76,7 @@ function BankAccounts() {
               </div>
             )}
             <p className={`text-xs ${account.demo ? "text-neutral-600 italic" : "text-neutral-400"}`}>{account.name}</p>
-            <h1 className={`text-base font-semibold mt-1 ${account.demo ? "text-neutral-500" : "text-white"}`}>{account.balance}</h1>
+            <h1 className={`text-base font-semibold mt-1 ${account.demo ? "text-neutral-500" : "text-white"}`}>{account.balance}$</h1>
             <p className={`text-xs mt-1 ${account.demo ? "text-neutral-600 italic" : "text-emerald-500"}`}>
               {account.demo ? "XXXXXX" : "XXXXX87UYHJ"}
             </p>

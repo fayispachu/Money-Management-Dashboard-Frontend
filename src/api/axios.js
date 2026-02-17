@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "https://money-management-dashboard-backend.onrender.com/api",
+  baseURL: "http://localhost:5000/api",
 });
 
 axiosInstance.interceptors.request.use((config) => {
@@ -17,6 +17,6 @@ axiosInstance.interceptors.request.use((config) => {
 export default axiosInstance;
 
 
-// http://localhost:5000
+// 
 
 // 

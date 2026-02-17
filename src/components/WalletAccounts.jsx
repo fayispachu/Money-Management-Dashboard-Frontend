@@ -34,7 +34,7 @@ function WalletAccounts() {
               className="absolute top-2 right-2 text-neutral-500 cursor-pointer"
             />
             <p className="text-neutral-400 text-xs">{wallet.name}</p>
-            <h1 className="text-white text-base font-semibold mt-1">{wallet.amount}</h1>
+            <h1 className="text-white text-base font-semibold mt-1">{wallet.amount}$</h1>
             <p className="text-neutral-500 text-xs mt-1">{wallet.growth}</p>
           </div>
         ))}
