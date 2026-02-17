@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SuccessTickPopup from "./SuccessTickPopup";
+import { useBank } from "../context/BankContext";
 
-function WithdrawPopup({ wallets, onClose, onWithdraw }) {
+function WithdrawPopup({ wallets, onClose, onWithdrawToBank }) {
+  const { banks,fetchBanks } = useBank(); // get user banks
   const [selectedWallet, setSelectedWallet] = useState("");
+  const [selectedBank, setSelectedBank] = useState("");
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleWithdraw = async () => {
+    // Validation
+    
     if (!selectedWallet) {
       setError("Please select a wallet");
+      return;
+    }
+    if (!selectedBank) {
+      setError("Please select a bank account");
       return;
     }
     if (!amount || Number(amount) <= 0) {
@@ -23,22 +32,44 @@ function WithdrawPopup({ wallets, onClose, onWithdraw }) {
       return;
     }
 
-    // Make sure onWithdraw returns an object { success: true/false }
-    const result = await onWithdraw(selectedWallet, Number(amount));
+  
+
+
+const result = await onWithdrawToBank(
+  selectedWallet,     
+  Number(amount),      
+  selectedBank         
+);
+
+console.log("Withdraw to bank payload fixed:", {
+  walletId: selectedWallet,
+  bankId: selectedBank,
+  amount: Number(amount),
+  
+});
+
+        fetchBanks();
+
 
     if (result?.success) {
       setShowSuccess(true);
       setSelectedWallet("");
+      setSelectedBank("");
       setAmount("");
       setError("");
+
+
 
       // Auto-close popup after 2.5 seconds
       setTimeout(() => {
         setShowSuccess(false);
         onClose();
       }, 2500);
+
+
+      
     } else {
-      setError(result?.message || "Failed to withdraw");
+      setError(result?.message || "Withdrawal failed");
     }
   };
 
@@ -47,11 +78,12 @@ function WithdrawPopup({ wallets, onClose, onWithdraw }) {
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-neutral-900 p-8 rounded shadow-md w-full max-w-md text-white">
           <h1 className="text-2xl font-bold mb-6 text-center text-emerald-400">
-            Withdraw
+            Withdraw to Bank
           </h1>
 
           {error && <div className="bg-red-700 text-white p-2 mb-4 rounded">{error}</div>}
 
+          {/* Wallet selection */}
           <select
             value={selectedWallet}
             onChange={e => setSelectedWallet(e.target.value)}
@@ -65,6 +97,21 @@ function WithdrawPopup({ wallets, onClose, onWithdraw }) {
             ))}
           </select>
 
+          {/* Bank selection */}
+          <select
+            value={selectedBank}
+            onChange={e => setSelectedBank(e.target.value)}
+            className="w-full bg-neutral-800 border border-neutral-700 p-2 mb-4 rounded focus:outline-none focus:ring focus:border-emerald-400"
+          >
+            <option value="">Select Bank Account</option>
+            {banks.map(b => (
+              <option key={b._id} value={b._id}>
+                {b.name} - {b.accountNumber}
+              </option>
+            ))}
+          </select>
+
+          {/* Amount input */}
           <input
             type="number"
             value={amount}
@@ -73,6 +120,7 @@ function WithdrawPopup({ wallets, onClose, onWithdraw }) {
             className="w-full bg-neutral-800 border border-neutral-700 p-2 mb-4 rounded focus:outline-none focus:ring focus:border-emerald-400"
           />
 
+          {/* Buttons */}
           <div className="flex gap-2">
             <button
               onClick={handleWithdraw}
@@ -90,6 +138,7 @@ function WithdrawPopup({ wallets, onClose, onWithdraw }) {
         </div>
       </div>
 
+      {/* Success popup */}
       <SuccessTickPopup
         show={showSuccess}
         message="Withdrawal Successful!"

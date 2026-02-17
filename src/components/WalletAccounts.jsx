@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { MoreVertical } from "lucide-react";
 
 function WalletAccounts() {
-  // Predefined demo wallets that look like real data
   const walletsData = [
     { id: 1, name: "Main Wallet", amount: "12,500", growth: "+4% since last hour" },
     { id: 2, name: "Savings Wallet", amount: "8,200", growth: "+2% since last hour" },
@@ -15,9 +14,7 @@ function WalletAccounts() {
   return (
     <div className="pb-3">
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-neutral-400 font-semibold text-lg">
-          Wallet Accounts
-        </h2>
+        <h2 className="text-neutral-400 font-semibold text-lg">Wallet Accounts</h2>
         <MoreVertical size={16} className="text-neutral-500 cursor-pointer" />
       </div>
 

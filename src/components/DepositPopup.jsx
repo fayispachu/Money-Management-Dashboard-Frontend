@@ -51,7 +51,7 @@ function DepositPopup({ wallets, onClose, onDeposit }) {
             <option value="">Select Wallet</option>
             {wallets.map(w => (
               <option key={w._id} value={w._id}>
-                {w.name} - ₹{w.balance || 0}
+                {w.name} - ${w.balance || 0}
               </option>
             ))}
           </select>

@@ -19,15 +19,11 @@ export const BankProvider = ({ children }) => {
     try {
       setLoading(true);
       setError("");
-
-      const { data } = await axiosInstance.get(
-        `/banks/user/${user.id}`
-      );
-
+      const { data } = await axiosInstance.get(`/banks/user/${user.id}`);
+      console.log(data, "bank data");
       setBanks(data);
     } catch (err) {
-      const message =
-        err.response?.data?.message || "Failed to fetch banks";
+      const message = err.response?.data?.message || "Failed to fetch banks";
       setError(message);
       toast.error(message);
     } finally {
@@ -55,8 +51,7 @@ export const BankProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      const message =
-        err.response?.data?.message || "Failed to add bank";
+      const message = err.response?.data?.message || "Failed to add bank";
       toast.error(message);
       return { success: false, message };
     }
@@ -66,20 +61,38 @@ export const BankProvider = ({ children }) => {
   const deleteBank = async (bankId) => {
     try {
       await axiosInstance.delete(`/banks/${bankId}`);
-
       toast.success("Bank deleted successfully");
       await fetchBanks();
-
       return { success: true };
     } catch (err) {
-      const message =
-        err.response?.data?.message || "Delete failed";
+      const message = err.response?.data?.message || "Delete failed";
       toast.error(message);
       return { success: false, message };
     }
   };
 
-  // Fetch when user changes
+  // Deposit money directly to bank from wallet
+const depositToBank = async (walletId, bankId, amount) => {
+  if (!walletId || !bankId || Number(amount) <= 0)
+    return { success: false, message: "Invalid input" };
+
+  try {
+    const { data } = await axiosInstance.post("/wallets/withdraw-to-bank", {
+      walletId,
+      bankAccountId: bankId,
+      amount: Number(amount), // make sure it's a number
+    });
+
+    toast.success("Amount successfully sent to bank");
+    return { success: true, data };
+  } catch (err) {
+    const message = err.response?.data?.message || "Failed to send to bank";
+    toast.error(message);
+    return { success: false, message };
+  }
+};
+
+
   useEffect(() => {
     fetchBanks();
   }, [user]);
@@ -93,6 +106,7 @@ export const BankProvider = ({ children }) => {
         addBank,
         deleteBank,
         fetchBanks,
+        depositToBank,
       }}
     >
       {children}

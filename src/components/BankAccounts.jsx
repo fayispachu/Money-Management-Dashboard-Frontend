@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MoreVertical } from "lucide-react";
 import BankAccountPopup from "./BankAccountPopup";
 import { useBank } from "../context/BankContext";
@@ -10,17 +10,12 @@ function BankAccounts() {
   const [openCardDropdown, setOpenCardDropdown] = useState(null);
   const [activeBank, setActiveBank] = useState(null);
 
-  // Determine if we should render demo
   const renderBanks = banks.length > 0 ? banks : [{ _id: "demo", name: "Demo Bank", balance: "0.00", demo: true }];
 
   return (
     <div className="pb-3 relative">
-      {/* Header */}
       <div className="flex justify-between items-center mb-3">
-        <h2 className="text-neutral-400 font-semibold text-lg">
-          Associated Bank Accounts
-        </h2>
-
+        <h2 className="text-neutral-400 font-semibold text-lg">Associated Bank Accounts</h2>
         <div className="relative">
           <MoreVertical
             size={18}
@@ -43,7 +38,6 @@ function BankAccounts() {
         </div>
       </div>
 
-      {/* Bank cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {renderBanks.map((account) => (
           <div
@@ -81,13 +75,8 @@ function BankAccounts() {
                 )}
               </div>
             )}
-
-            <p className={`text-xs ${account.demo ? "text-neutral-600 italic" : "text-neutral-400"}`}>
-              {account.name}
-            </p>
-            <h1 className={`text-base font-semibold mt-1 ${account.demo ? "text-neutral-500" : "text-white"}`}>
-              {account.balance}
-            </h1>
+            <p className={`text-xs ${account.demo ? "text-neutral-600 italic" : "text-neutral-400"}`}>{account.name}</p>
+            <h1 className={`text-base font-semibold mt-1 ${account.demo ? "text-neutral-500" : "text-white"}`}>{account.balance}</h1>
             <p className={`text-xs mt-1 ${account.demo ? "text-neutral-600 italic" : "text-emerald-500"}`}>
               {account.demo ? "XXXXXX" : "XXXXX87UYHJ"}
             </p>
@@ -95,7 +84,6 @@ function BankAccounts() {
         ))}
       </div>
 
-      {/* Add Bank popup */}
       {showAddBankPopup && (
         <BankAccountPopup
           onClose={() => setShowAddBankPopup(false)}

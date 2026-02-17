@@ -8,7 +8,7 @@ import WithdrawPopup from "./WithdrawPopup";
 import CreateWalletPopup from "./CreateWalletPopup";
 
 function TotalBalance() {
-  const { wallets, loading, error, deposit, withdraw } =
+  const { wallets, loading, error, deposit, withdrawToBank } =
     useContext(WalletContext);
 
   const [showDeposit, setShowDeposit] = useState(false);
@@ -22,7 +22,6 @@ function TotalBalance() {
 
   const handleDeposit = async (walletId, amount) => {
     const result = await deposit(walletId, amount);
-
     if (!result.success) {
       toast.error(result.message);
     } else {
@@ -31,13 +30,12 @@ function TotalBalance() {
     }
   };
 
-  const handleWithdraw = async (walletId, amount) => {
-    const result = await withdraw(walletId, amount);
-
+  const handleWithdrawToBank = async (walletId, amount, bankId) => {
+    const result = await withdrawToBank(walletId, bankId, amount);
     if (!result.success) {
       toast.error(result.message);
     } else {
-      toast.success("Withdrawal successful");
+      toast.success("Withdrawal to bank successful");
       setShowWithdraw(false);
     }
   };
@@ -79,7 +77,7 @@ function TotalBalance() {
             className="flex-1 border rounded-md border-neutral-600 font-medium py-1.5 text-xs transition-all bg-neutral-800 text-neutral-300 hover:bg-white hover:text-black"
             onClick={() => setShowWithdraw(true)}
           >
-            Withdraw
+            Withdraw to Bank
           </button>
 
           <button
@@ -108,7 +106,7 @@ function TotalBalance() {
         <WithdrawPopup
           wallets={wallets}
           onClose={() => setShowWithdraw(false)}
-          onWithdraw={handleWithdraw}
+          onWithdrawToBank={handleWithdrawToBank} // updated prop
         />
       )}
 
