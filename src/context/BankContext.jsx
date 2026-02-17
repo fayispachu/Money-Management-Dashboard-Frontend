@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import axiosInstance from "../api/axios";
 import { AuthContext } from "./AuthContext";
+import toast from "react-hot-toast";
 
 export const BankContext = createContext();
 
@@ -11,69 +12,88 @@ export const BankProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-const fetchBanks = async () => {
-  if (!user?.id) return;
+  // Fetch Banks
+  const fetchBanks = async () => {
+    if (!user?.id) return;
 
-  try {
-    setLoading(true);
-    const { data } = await axiosInstance.get(
-      `/banks/user/${user.id}`
-    );
-    setBanks(data);
-  } catch (err) {
-    setError(err.response?.data?.message || "Failed to fetch banks");
-  } finally {
-    setLoading(false);
-  }
-};
-
-const addBank = async (bank) => {
-  console.log("addBank triggered", bank);
-  console.log("Current user:", user);
-
-  if (!user?.id) {
-    console.log("User missing");
-    return;
-  }
-
-  try {
-    console.log("Sending request...");
-    await axiosInstance.post("/banks/add", {
-      userId: user.id,   // ✅ FIXED
-      name: bank.name,
-      accountNumber: bank.accountNumber,
-      ifsc: bank.ifsc,
-    });
-
-    console.log("Bank added successfully");
-    fetchBanks();
-  } catch (err) {
-    console.error("AddBank Error:", err.response?.data || err.message);
-  }
-};
-
-useEffect(() => {
-  console.log("User changed:", user);
-  fetchBanks();
-}, [user]);
-
-
-  const deleteBank = async (bankId) => {
     try {
-      await axiosInstance.delete(`/banks/${bankId}`);
-      fetchBanks();
+      setLoading(true);
+      setError("");
+
+      const { data } = await axiosInstance.get(
+        `/banks/user/${user.id}`
+      );
+
+      setBanks(data);
     } catch (err) {
-      console.error(err.response?.data?.message);
+      const message =
+        err.response?.data?.message || "Failed to fetch banks";
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Add Bank
+  const addBank = async (bank) => {
+    if (!user?.id) {
+      toast.error("User not logged in");
+      return { success: false };
+    }
+
+    try {
+      await axiosInstance.post("/banks/add", {
+        userId: user.id,
+        name: bank.name,
+        accountNumber: bank.accountNumber,
+        ifsc: bank.ifsc,
+      });
+
+      toast.success("Bank added successfully");
+      await fetchBanks();
+
+      return { success: true };
+    } catch (err) {
+      const message =
+        err.response?.data?.message || "Failed to add bank";
+      toast.error(message);
+      return { success: false, message };
+    }
+  };
+
+  // Delete Bank
+  const deleteBank = async (bankId) => {
+    try {
+      await axiosInstance.delete(`/banks/${bankId}`);
+
+      toast.success("Bank deleted successfully");
+      await fetchBanks();
+
+      return { success: true };
+    } catch (err) {
+      const message =
+        err.response?.data?.message || "Delete failed";
+      toast.error(message);
+      return { success: false, message };
+    }
+  };
+
+  // Fetch when user changes
   useEffect(() => {
     fetchBanks();
   }, [user]);
 
   return (
     <BankContext.Provider
-      value={{ banks, loading, error, addBank, deleteBank }}
+      value={{
+        banks,
+        loading,
+        error,
+        addBank,
+        deleteBank,
+        fetchBanks,
+      }}
     >
       {children}
     </BankContext.Provider>

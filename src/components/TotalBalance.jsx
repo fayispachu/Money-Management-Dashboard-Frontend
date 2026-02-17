@@ -1,79 +1,92 @@
 import React, { useState, useContext } from "react";
+import toast from "react-hot-toast";
 import { WalletContext } from "../context/WalletContext";
 import Referral from "./Referral";
 import Bonus from "./Bonus";
 import DepositPopup from "./DepositPopup";
 import WithdrawPopup from "./WithdrawPopup";
-import BankAccountPopup from "./BankAccountPopup";
+import CreateWalletPopup from "./CreateWalletPopup";
 
 function TotalBalance() {
   const { wallets, loading, error, deposit, withdraw } =
     useContext(WalletContext);
 
-  const [activeButton, setActiveButton] = useState(null);
   const [showDeposit, setShowDeposit] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
-  const [showBankPopup, setShowBankPopup] = useState(false);
+  const [showCreateWallet, setShowCreateWallet] = useState(false);
 
-  const [bankAccounts, setBankAccounts] = useState([]);
-
-  const totalBalance = wallets.reduce((sum, w) => sum + (w.balance || 0), 0);
-
-  const getButtonStyle = name =>
-    `flex-1 border rounded-md border-neutral-600 font-medium py-1.5 text-xs transition-all
-     ${activeButton === name
-       ? "bg-white text-black"
-       : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"}`;
+  const totalBalance = wallets.reduce(
+    (sum, w) => sum + (w.balance || 0),
+    0
+  );
 
   const handleDeposit = async (walletId, amount) => {
     const result = await deposit(walletId, amount);
-    if (!result.success) alert(result.message);
-    else setShowDeposit(false);
+
+    if (!result.success) {
+      toast.error(result.message);
+    } else {
+      toast.success("Deposit successful");
+      setShowDeposit(false);
+    }
   };
 
   const handleWithdraw = async (walletId, amount) => {
     const result = await withdraw(walletId, amount);
-    if (!result.success) alert(result.message);
-    else setShowWithdraw(false);
-  };
 
-  const handleAddBank = bank => {
-    setBankAccounts(prev => [...prev, { ...bank, active: true }]);
-    alert(`Bank ${bank.name} added successfully!`);
+    if (!result.success) {
+      toast.error(result.message);
+    } else {
+      toast.success("Withdrawal successful");
+      setShowWithdraw(false);
+    }
   };
 
   return (
     <div className="flex flex-col gap-3">
       <div className="bg-neutral-900 rounded-xl p-5 shadow-md">
-        <h2 className="text-neutral-500 font-semibold text-lg">Total Balance</h2>
+        <h2 className="text-neutral-500 font-semibold text-lg">
+          Total Balance
+        </h2>
 
         <h1 className="text-3xl font-bold text-emerald-400 mt-2">
           ₹{totalBalance.toLocaleString()}
         </h1>
 
-        <p className="text-neutral-600 text-xs">+35.5% from last month</p>
+        <p className="text-neutral-600 text-xs">
+          +35.5% from last month
+        </p>
 
-        {loading && <p className="text-neutral-400 text-sm mt-1">Loading wallets...</p>}
-        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+        {loading && (
+          <p className="text-neutral-400 text-sm mt-1">
+            Loading wallets...
+          </p>
+        )}
+
+        {error && (
+          <p className="text-red-500 text-sm mt-1">{error}</p>
+        )}
 
         <div className="flex gap-2 mt-3">
           <button
-            className={getButtonStyle("deposit")}
+            className="flex-1 border rounded-md border-neutral-600 font-medium py-1.5 text-xs transition-all bg-neutral-800 text-neutral-300 hover:bg-white hover:text-black"
             onClick={() => setShowDeposit(true)}
           >
             Deposit
           </button>
+
           <button
-            className={getButtonStyle("withdraw")}
+            className="flex-1 border rounded-md border-neutral-600 font-medium py-1.5 text-xs transition-all bg-neutral-800 text-neutral-300 hover:bg-white hover:text-black"
             onClick={() => setShowWithdraw(true)}
           >
             Withdraw
           </button>
+
           <button
-            className={getButtonStyle("account")}
-            onClick={() => setShowBankPopup(true)}
+            className="flex-1 border rounded-md border-neutral-600 font-medium py-1.5 text-xs transition-all bg-neutral-800 text-neutral-300 hover:bg-white hover:text-black"
+            onClick={() => setShowCreateWallet(true)}
           >
-            Add Bank Account
+            Add New Account
           </button>
         </div>
       </div>
@@ -90,6 +103,7 @@ function TotalBalance() {
           onDeposit={handleDeposit}
         />
       )}
+
       {showWithdraw && (
         <WithdrawPopup
           wallets={wallets}
@@ -97,10 +111,10 @@ function TotalBalance() {
           onWithdraw={handleWithdraw}
         />
       )}
-      {showBankPopup && (
-        <BankAccountPopup
-          onClose={() => setShowBankPopup(false)}
-          onAddBank={handleAddBank}
+
+      {showCreateWallet && (
+        <CreateWalletPopup
+          onClose={() => setShowCreateWallet(false)}
         />
       )}
     </div>
